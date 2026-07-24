@@ -59,8 +59,6 @@ const Footer = () => {
                         <h3 className="text-white font-bold mb-6 text-lg tracking-tight">Contactez-nous</h3>
                         <ul className="space-y-4 text-sm text-gray-400">
                             <li className="flex items-start gap-3">
-                                <MapPin className="w-5 h-5 text-agri-green flex-shrink-0 mt-0.5" />
-                                <span>Quartier Tomdè, Rue de la poste, Kara, Togo</span>
                             </li>
                             <li className="flex items-center gap-3">
                                 <Phone className="w-5 h-5 text-agri-green flex-shrink-0" />
@@ -76,7 +74,6 @@ const Footer = () => {
 
                 <div className="pt-8 border-t border-gray-800 text-center text-sm text-gray-500 font-medium flex flex-col md:flex-row justify-between items-center gap-4">
                     <p>&copy; {new Date().getFullYear()} Vendify (AgriKara). Tous droits réservés.</p>
-                    <p>Développé avec <span className="text-agri-red">❤️</span> pour les agriculteurs togolais.</p>
                 </div>
             </div>
         </footer>

@@ -1,9 +1,27 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 
 const CartContext = createContext(null);
 
+const STORAGE_KEY = 'vendify_cart';
+
+const loadCart = () => {
+    try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        return saved ? JSON.parse(saved) : [];
+    } catch {
+        return [];
+    }
+};
+
 export const CartProvider = ({ children }) => {
-    const [cart, setCart] = useState([]);
+    const [cart, setCart] = useState(loadCart);
+
+    // Sauvegarde dans localStorage à chaque changement
+    useEffect(() => {
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(cart));
+        } catch {}
+    }, [cart]);
 
     const addToCart = (product) => {
         setCart(prev => {
@@ -33,9 +51,12 @@ export const CartProvider = ({ children }) => {
         );
     };
 
-    const clearCart = () => setCart([]);
+    const clearCart = () => {
+        setCart([]);
+        try { localStorage.removeItem(STORAGE_KEY); } catch {}
+    };
 
-    const cartTotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const cartTotal = cart.reduce((sum, item) => sum + parseFloat(item.price || 0) * item.quantity, 0);
     const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
     return (

@@ -73,7 +73,7 @@ const Footer = () => {
                 </div>
 
                 <div className="pt-8 border-t border-gray-800 text-center text-sm text-gray-500 font-medium flex flex-col md:flex-row justify-between items-center gap-4">
-                    <p>&copy; {new Date().getFullYear()} Vendify (AgriKara). Tous droits réservés.</p>
+                    <p>&copy; {new Date().getFullYear()} Vendify. Tous droits réservés.</p>
                 </div>
             </div>
         </footer>

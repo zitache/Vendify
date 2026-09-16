@@ -14,12 +14,14 @@ class CategorySeeder extends Seeder
     public function run(): void
     {
         $categories = [
-            ['name' => 'Fruits', 'description' => 'Fresh and delicious fruits'],
-            ['name' => 'Vegetables', 'description' => 'Organic vegetables'],
-            ['name' => 'Grains', 'description' => 'Quality grains and cereals'],
-            ['name' => 'Dairy', 'description' => 'Fresh dairy products'],
-            ['name' => 'Meat & Fish', 'description' => 'Quality meat and fish'],
-            ['name' => 'Honey & Spices', 'description' => 'Natural honey and spices'],
+            ['name' => 'Céréales',           'description' => 'Maïs, sorgho, mil, riz et autres céréales'],
+            ['name' => 'Tubercules',          'description' => 'Igname, manioc, patate douce, taro'],
+            ['name' => 'Légumineuses',        'description' => 'Arachides, haricots, soja, niébé'],
+            ['name' => 'Légumes',             'description' => 'Tomates, oignons, piments, gombo et autres légumes frais'],
+            ['name' => 'Fruits',              'description' => 'Mangues, oranges, papayes, bananes et autres fruits'],
+            ['name' => 'Épices & Condiments', 'description' => 'Gingembre, ail, poivre, soumbala et autres épices'],
+            ['name' => 'Produits laitiers',   'description' => 'Lait frais, fromage wagasi, beurre de karité'],
+            ['name' => 'Viande & Poisson',    'description' => 'Viande de brousse, volaille, poisson frais ou fumé'],
         ];
 
         foreach ($categories as $category) {

@@ -11,6 +11,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\WithdrawalController;
+use App\Http\Controllers\ReceiptController;
 
 // Routes publiques
 Route::post('/register', [AuthController::class, 'register']);
@@ -47,6 +48,10 @@ Route::middleware('auth:sanctum')->group(function () {
     // Retraits (agriculteurs)
     Route::get('/withdrawals', [WithdrawalController::class, 'index']);
     Route::post('/withdrawals', [WithdrawalController::class, 'store']);
+    Route::get('/withdrawals/{withdrawal}/receipt', [ReceiptController::class, 'withdrawal']);
+
+    // Facture commande (acheteur)
+    Route::get('/orders/{order}/receipt', [ReceiptController::class, 'order']);
 
     // Dashboards
     Route::get('/dashboard/farmer', [DashboardController::class, 'farmerStats']);

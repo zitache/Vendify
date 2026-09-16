@@ -25,12 +25,37 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->name(),
+            'name'  => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
+            'phone'    => fake()->numerify('9########'),
+            'locality' => fake()->city(),
+            'role'     => 'acheteur',
+            'balance'  => 0,
         ];
+    }
+
+    public function farmer(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'agriculteur',
+        ]);
+    }
+
+    public function admin(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => 'admin',
+        ]);
+    }
+
+    public function withBalance(float $balance): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'balance' => $balance,
+        ]);
     }
 
     /**

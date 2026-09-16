@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from '../../api/axios';
-import { ArrowDownToLine, Clock, CheckCircle, XCircle, Wallet } from 'lucide-react';
+import { ArrowDownToLine, Clock, CheckCircle, XCircle, Wallet, Download } from 'lucide-react';
 
 const statusConfig = {
     pending:  { label: 'En attente',  color: 'bg-amber-50 text-amber-600',   icon: Clock },
@@ -11,12 +11,33 @@ const statusConfig = {
 const Withdrawals = () => {
     const [withdrawals, setWithdrawals] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [downloading, setDownloading] = useState(null);
+
     useEffect(() => {
         axios.get('/withdrawals')
             .then(res => setWithdrawals(res.data))
             .catch(console.error)
             .finally(() => setLoading(false));
     }, []);
+
+    const downloadReceipt = async (id) => {
+        setDownloading(id);
+        try {
+            const res = await axios.get(`/withdrawals/${id}/receipt`, { responseType: 'blob' });
+            const url = URL.createObjectURL(new Blob([res.data], { type: 'application/pdf' }));
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `recu_retrait_${String(id).padStart(5, '0')}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+        } catch {
+            alert('Impossible de générer le reçu.');
+        } finally {
+            setDownloading(null);
+        }
+    };
 
     const totalPending  = withdrawals.filter(w => w.status === 'pending').reduce((s, w) => s + w.amount, 0);
     const totalApproved = withdrawals.filter(w => w.status === 'approved').reduce((s, w) => s + w.net_amount, 0);
@@ -70,7 +91,7 @@ const Withdrawals = () => {
                                         <div>
                                             <p className="font-black text-gray-900">
                                                 {w.amount.toLocaleString()} FCFA
-                                                <span className="ml-2 text-sm font-medium text-gray-400">via {w.method === 'moov' ? 'Moov Africa' : 'Yas Money'}</span>
+                                                <span className="ml-2 text-sm font-medium text-gray-400">via {w.method === 'moov' ? 'Moov Africa' : 'Mixx by yas'}</span>
                                             </p>
                                             <p className="text-xs text-gray-400 font-medium">{w.phone} · {new Date(w.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
                                         </div>
@@ -84,6 +105,17 @@ const Withdrawals = () => {
                                         <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${cfg.color}`}>
                                             {cfg.label}
                                         </span>
+                                        {w.status === 'approved' && (
+                                            <button
+                                                onClick={() => downloadReceipt(w.id)}
+                                                disabled={downloading === w.id}
+                                                title="Télécharger le reçu PDF"
+                                                className="flex items-center gap-1.5 px-3 py-2 bg-agri-green/10 text-agri-green rounded-xl text-xs font-bold hover:bg-agri-green hover:text-white transition-all disabled:opacity-50"
+                                            >
+                                                <Download className="w-3.5 h-3.5" />
+                                                {downloading === w.id ? '...' : 'Reçu'}
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
                                 {w.admin_note && (

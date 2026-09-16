@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import axios from '../api/axios';
 import { openKkiapayWidget, addKkiapayListener, removeKkiapayListener } from 'kkiapay';
-import { Truck, ShieldCheck, CheckCircle2, ChevronRight, AlertCircle } from 'lucide-react';
+import { Truck, ShieldCheck, ChevronRight, AlertCircle, Wallet } from 'lucide-react';
 
 const Checkout = () => {
     const { user } = useAuth();
@@ -13,8 +13,6 @@ const Checkout = () => {
     const [phone, setPhone] = useState(user?.phone || '');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const [confirmed, setConfirmed] = useState(false);
-    const [confirmedOrder, setConfirmedOrder] = useState(null);
     const navigate = useNavigate();
 
     // Référence vers la commande créée (accessible dans les callbacks KiKiaPay)
@@ -22,25 +20,27 @@ const Checkout = () => {
 
     // ─── Listener KiKiaPay : succès de paiement ──────────────────────────────
     useEffect(() => {
-        const onSuccess = async ({ transactionId }) => {
+        const onSuccess = async (payload) => {
+            const transactionId = payload?.transactionId || payload?.transaction_id || payload?.id;
             const order = orderRef.current;
-            if (!order) return;
+            if (!order) {
+                setError('Erreur inattendue : commande introuvable. Contactez le support.');
+                return;
+            }
             setLoading(true);
             setError('');
             try {
-                const res = await axios.post('/payments/verify', {
+                await axios.post('/payments/verify', {
                     order_id:       order.id,
-                    transaction_id: transactionId,
+                    transaction_id: transactionId || 'sandbox_' + order.id,
                 });
                 clearCart();
-                setConfirmedOrder(res.data.order);
-                setConfirmed(true);
+                navigate('/dashboard', { state: { paymentSuccess: true, orderId: order.id } });
             } catch (err) {
                 setError(
                     err.response?.data?.message ||
                     'Le paiement a été reçu mais la vérification a échoué. Contactez le support.'
                 );
-            } finally {
                 setLoading(false);
             }
         };
@@ -93,41 +93,6 @@ const Checkout = () => {
             setLoading(false);
         }
     };
-
-    // ─── Écran de confirmation ────────────────────────────────────────────────
-    if (confirmed) {
-        return (
-            <div className="max-w-xl mx-auto py-20 px-4 text-center">
-                <div className="card border-none shadow-2xl p-12 rounded-3xl">
-                    <div className="w-24 h-24 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-8 animate-bounce">
-                        <CheckCircle2 className="w-12 h-12 text-emerald-600" />
-                    </div>
-                    <h2 className="text-4xl font-black text-gray-900 mb-4 tracking-tight">
-                        Commande Confirmée !
-                    </h2>
-                    <p className="text-gray-500 mb-8 text-lg">
-                        Merci pour votre achat. Votre commande{' '}
-                        <span className="font-bold text-gray-900">#{confirmedOrder?.id}</span>{' '}
-                        est en cours de préparation.
-                    </p>
-                    <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100 mb-10 text-left space-y-1">
-                        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">
-                            Détails de livraison
-                        </p>
-                        <p className="font-bold text-gray-900">{user?.name}</p>
-                        <p className="text-gray-600">{deliveryAddress}</p>
-                        <p className="text-gray-600">{phone}</p>
-                    </div>
-                    <button
-                        onClick={() => navigate('/dashboard')}
-                        className="btn-primary w-full py-4 text-lg"
-                    >
-                        Suivre ma commande
-                    </button>
-                </div>
-            </div>
-        );
-    }
 
     // ─── Formulaire de commande ───────────────────────────────────────────────
     return (
@@ -253,14 +218,15 @@ const Checkout = () => {
                             'Traitement...'
                         ) : (
                             <>
-                                Payer avec KiKiaPay
+                                <Wallet className="w-5 h-5" />
+                                Effectuer le paiement
                                 <ChevronRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
                             </>
                         )}
                     </button>
 
                     <p className="text-[10px] text-center text-gray-400 uppercase tracking-tight font-bold mt-4">
-                        Moov Africa · Yas (T-Money) · Carte bancaire
+                        Moov Africa · Yas · Carte bancaire
                     </p>
                 </div>
             </div>

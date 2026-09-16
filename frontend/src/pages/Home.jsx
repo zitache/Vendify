@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import {
     ArrowRight, ShieldCheck, MapPin, Users,
-    Smartphone, Leaf, Star, Truck, ChevronRight, Sprout
+    Smartphone, Leaf, Star, Truck, Sprout
 } from 'lucide-react';
 import Footer from '../components/Footer';
 
@@ -11,10 +11,9 @@ const SPLIT_IMG  = 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449
 
 /* ── données ─────────────────────────────────────────────────────────────── */
 const STATS = [
-    { value: '500+', label: 'Agriculteurs', icon: Leaf },
-    { value: '2 000+', label: 'Commandes', icon: Truck },
+    { value: '200+', label: 'Agriculteurs', icon: Leaf },
+    { value: '100+', label: 'Commandes', icon: Truck },
     { value: '98 %', label: 'Satisfaction', icon: Star },
-    { value: '12', label: 'Districts couverts', icon: MapPin },
 ];
 
 const STEPS = [
@@ -35,14 +34,6 @@ const STEPS = [
     },
 ];
 
-const CATEGORIES = [
-    { name: 'Légumes frais',    emoji: '🥬', count: '120+ produits', ring: 'ring-emerald-200',  bg: 'bg-emerald-50',  text: 'text-emerald-700' },
-    { name: 'Céréales & Grains', emoji: '🌾', count: '85+ produits', ring: 'ring-amber-200',    bg: 'bg-amber-50',    text: 'text-amber-700' },
-    { name: 'Fruits tropicaux', emoji: '🍍', count: '60+ produits', ring: 'ring-orange-200',   bg: 'bg-orange-50',   text: 'text-orange-700' },
-    { name: 'Tubercules',       emoji: '🍠', count: '40+ produits', ring: 'ring-rose-200',     bg: 'bg-rose-50',     text: 'text-rose-700' },
-    { name: 'Épices & Herbes',  emoji: '🌿', count: '30+ produits', ring: 'ring-teal-200',     bg: 'bg-teal-50',     text: 'text-teal-700' },
-    { name: 'Légumineuses',     emoji: '🫘', count: '25+ produits', ring: 'ring-lime-200',     bg: 'bg-lime-50',     text: 'text-lime-700' },
-];
 
 /* ════════════════════════════════════════════════════════════════════════════ */
 const Home = () => (
@@ -129,43 +120,6 @@ const Home = () => (
                             <span className="w-1.5 h-1.5 rounded-full bg-agri-green" />
                             {t}
                         </span>
-                    ))}
-                </div>
-            </div>
-        </section>
-
-        {/* ── CATÉGORIES ────────────────────────────────────────────────────── */}
-        <section className="py-24 bg-white">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-14">
-                    <div>
-                        <p className="text-agri-green font-black uppercase tracking-[0.3em] text-xs mb-3">Catalogue</p>
-                        <h2 className="text-4xl sm:text-5xl font-black text-gray-900 tracking-tight leading-tight">
-                            Explorez nos<br />catégories
-                        </h2>
-                    </div>
-                    <Link
-                        to="/catalog"
-                        className="inline-flex items-center gap-2 text-agri-green font-bold hover:underline text-sm group"
-                    >
-                        Voir tout le catalogue
-                        <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-                    </Link>
-                </div>
-
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-                    {CATEGORIES.map(({ name, emoji, count, ring, bg, text }) => (
-                        <Link
-                            key={name}
-                            to="/catalog"
-                            className={`${bg} ${ring} ring-1 rounded-3xl p-5 flex flex-col items-center text-center gap-3 hover:scale-105 hover:shadow-lg transition-all duration-300 group`}
-                        >
-                            <span className="text-4xl group-hover:scale-110 transition-transform duration-300">{emoji}</span>
-                            <div>
-                                <p className={`font-black text-sm ${text} leading-tight`}>{name}</p>
-                                <p className="text-gray-400 text-[10px] font-semibold mt-1">{count}</p>
-                            </div>
-                        </Link>
                     ))}
                 </div>
             </div>

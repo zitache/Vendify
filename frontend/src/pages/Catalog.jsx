@@ -53,7 +53,18 @@ const Catalog = () => {
     };
 
     const handleFilterChange = (e) => {
-        setFilters({ ...filters, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+        if (name === 'min_price') {
+            const v = value === '' ? '' : Math.max(0, Number(value));
+            setFilters({ ...filters, min_price: v });
+            return;
+        }
+        if (name === 'max_price') {
+            const v = value === '' ? '' : Math.max(1, Number(value));
+            setFilters({ ...filters, max_price: v });
+            return;
+        }
+        setFilters({ ...filters, [name]: value });
     };
 
     const applyFilters = (e) => {
@@ -109,7 +120,6 @@ const Catalog = () => {
                                     <input 
                                         name="locality"
                                         className="input pl-10 text-sm" 
-                                        placeholder="Ex: Kara, Pagouda" 
                                         value={filters.locality}
                                         onChange={handleFilterChange}
                                     />
@@ -120,19 +130,21 @@ const Catalog = () => {
                             <div>
                                 <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Prix (FCFA)</label>
                                 <div className="grid grid-cols-2 gap-2">
-                                    <input 
+                                    <input
                                         name="min_price"
-                                        type="number" 
-                                        className="input text-sm" 
-                                        placeholder="Min" 
+                                        type="number"
+                                        min="0"
+                                        className="input text-sm"
+                                        placeholder="Min"
                                         value={filters.min_price}
                                         onChange={handleFilterChange}
                                     />
-                                    <input 
+                                    <input
                                         name="max_price"
-                                        type="number" 
-                                        className="input text-sm" 
-                                        placeholder="Max" 
+                                        type="number"
+                                        min="1"
+                                        className="input text-sm"
+                                        placeholder="Max"
                                         value={filters.max_price}
                                         onChange={handleFilterChange}
                                     />

@@ -3,9 +3,9 @@ import { useAuth } from '../context/AuthContext';
 import axios from '../api/axios';
 import {
     Package, ShoppingCart, Clock, DollarSign, Plus, ChevronRight,
-    Wallet, ArrowDownToLine, X, Phone, CheckCircle, AlertCircle, TrendingUp
+    Wallet, ArrowDownToLine, X, Phone, CheckCircle, AlertCircle, TrendingUp, Download
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import AdminDashboard from './admin/AdminDashboard';
 
 // ─── Modal de retrait ────────────────────────────────────────────────────────
@@ -312,6 +312,23 @@ const FarmerDashboard = ({ stats, onUpdateOrderStatus, onBalanceChange }) => {
 };
 
 // ─── Dashboard Acheteur ──────────────────────────────────────────────────────
+const downloadOrderReceipt = async (orderId) => {
+    try {
+        const { default: axios } = await import('../api/axios');
+        const res = await axios.get(`/orders/${orderId}/receipt`, { responseType: 'blob' });
+        const url = URL.createObjectURL(new Blob([res.data], { type: 'application/pdf' }));
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `facture_commande_${String(orderId).padStart(5, '0')}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+    } catch {
+        alert('Facture disponible uniquement après confirmation du paiement.');
+    }
+};
+
 const BuyerDashboard = ({ stats, user }) => (
     <div className="space-y-8">
         <div>
@@ -351,12 +368,22 @@ const BuyerDashboard = ({ stats, user }) => (
                                 <p className="text-xs text-gray-500 font-medium">{order.items?.length || 0} articles • {order.total_amount} FCFA</p>
                             </div>
                         </div>
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-3">
                             <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tight ${
                                 order.status === 'confirmée' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
                             }`}>
                                 {order.status}
                             </span>
+                            {order.status === 'confirmée' && (
+                                <button
+                                    onClick={() => downloadOrderReceipt(order.id)}
+                                    title="Télécharger la facture PDF"
+                                    className="flex items-center gap-1 px-3 py-1.5 bg-agri-green/10 text-agri-green rounded-lg text-xs font-bold hover:bg-agri-green hover:text-white transition-all"
+                                >
+                                    <Download className="w-3.5 h-3.5" />
+                                    Facture
+                                </button>
+                            )}
                             <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-agri-green transition-colors" />
                         </div>
                     </div>
@@ -369,9 +396,12 @@ const BuyerDashboard = ({ stats, user }) => (
 // ─── Composant principal ─────────────────────────────────────────────────────
 const Dashboard = () => {
     const { user } = useAuth();
+    const location = useLocation();
     const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
+    const paymentSuccess = location.state?.paymentSuccess;
+    const paidOrderId   = location.state?.orderId;
 
     useEffect(() => {
         fetchStats();
@@ -422,6 +452,12 @@ const Dashboard = () => {
 
     return (
         <div className="max-w-7xl mx-auto">
+            {paymentSuccess && (
+                <div className="mx-4 mt-6 flex items-center gap-3 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-2xl px-5 py-4 font-medium shadow-sm">
+                    <CheckCircle className="w-5 h-5 flex-shrink-0 text-emerald-500" />
+                    Paiement confirmé ! Votre commande <strong className="mx-1">#{paidOrderId}</strong> est en cours de préparation.
+                </div>
+            )}
             {user.role === 'agriculteur' && (
                 <FarmerDashboard
                     stats={stats}

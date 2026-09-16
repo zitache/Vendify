@@ -49,7 +49,7 @@ const Cart = () => {
                                 <div className="text-agri-green font-extrabold text-lg">{item.price} FCFA <span className="text-xs text-gray-400 font-medium">/ kg</span></div>
                             </div>
 
-                            <div className="flex items-center gap-4 bg-gray-50 p-2 rounded-xl">
+                            <div className="flex items-center gap-2 bg-gray-50 p-2 rounded-xl">
                                 <button
                                     onClick={() => updateQuantity(item.id, item.quantity - 1)}
                                     className="p-2 hover:bg-white rounded-lg transition-colors text-gray-500 disabled:opacity-30 shadow-sm"
@@ -57,7 +57,16 @@ const Cart = () => {
                                 >
                                     <Minus className="w-4 h-4" />
                                 </button>
-                                <span className="w-8 text-center font-bold text-gray-900">{item.quantity}</span>
+                                <input
+                                    type="number"
+                                    min="1"
+                                    value={item.quantity}
+                                    onChange={(e) => {
+                                        const val = parseInt(e.target.value);
+                                        if (!isNaN(val) && val >= 1) updateQuantity(item.id, val);
+                                    }}
+                                    className="w-16 text-center font-bold text-gray-900 bg-white border border-gray-200 rounded-lg py-1 focus:outline-none focus:border-agri-green"
+                                />
                                 <button
                                     onClick={() => updateQuantity(item.id, item.quantity + 1)}
                                     className="p-2 hover:bg-white rounded-lg transition-colors text-gray-500 shadow-sm"
@@ -68,7 +77,7 @@ const Cart = () => {
 
                             <div className="text-right sm:min-w-[120px]">
                                 <p className="text-sm text-gray-400 uppercase tracking-widest font-bold mb-1">Total</p>
-                                <p className="text-xl font-black text-gray-900 tracking-tight">{item.price * item.quantity} <span className="text-xs">FCFA</span></p>
+                                <p className="text-xl font-black text-gray-900 tracking-tight">{(parseFloat(item.price) * item.quantity).toLocaleString('fr-FR')} <span className="text-xs">FCFA</span></p>
                             </div>
 
                             <button

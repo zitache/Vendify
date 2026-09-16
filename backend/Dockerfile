@@ -12,21 +12,21 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /app
 
-# Dépendances PHP en premier (layer cache)
-COPY composer.json composer.lock ./
-RUN composer install --no-dev --optimize-autoloader --no-scripts
-
-# Code source
+# Copier tout le code source
 COPY . .
 
-# Re-run scripts après la copie du code
-RUN composer dump-autoload --optimize
-
-# Permissions storage / cache
-RUN mkdir -p storage/framework/{cache,sessions,views} bootstrap/cache \
+# Créer les répertoires requis par Laravel AVANT composer install
+RUN mkdir -p storage/framework/cache \
+             storage/framework/sessions \
+             storage/framework/views \
+             storage/app/public \
+             storage/logs \
+             bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
+
+# Installer les dépendances (avec scripts : package:discover peut maintenant écrire)
+RUN composer install --no-dev --optimize-autoloader
 
 EXPOSE 8080
 
-# migrate + serve au démarrage
 CMD sh -c "php artisan config:cache && php artisan route:cache && php artisan view:cache && php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=${PORT:-8080}"

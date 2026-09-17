@@ -72,16 +72,22 @@ class DashboardController extends Controller
         $ordersCount   = Order::count();
         $totalRevenue  = Order::where('status', 'confirmée')->sum('total_amount');
 
+        $isPgsql = DB::getDriverName() === 'pgsql';
+
+        // Format SQL selon le driver
+        $monthFormat    = $isPgsql ? "TO_CHAR(created_at, 'Mon YYYY')" : "DATE_FORMAT(created_at, '%b %Y')";
+        $sortKeyFormat  = $isPgsql ? "TO_CHAR(created_at, 'YYYYMM')"  : "DATE_FORMAT(created_at, '%Y%m')";
+
         // Ventes et commandes par mois (12 derniers mois)
         $salesByMonth = Order::select(
-            DB::raw("DATE_FORMAT(created_at, '%b %Y') as month"),
-            DB::raw("DATE_FORMAT(created_at, '%Y%m') as sort_key"),
+            DB::raw("{$monthFormat} as month"),
+            DB::raw("{$sortKeyFormat} as sort_key"),
             DB::raw('SUM(total_amount) as revenue'),
             DB::raw('COUNT(*) as orders')
         )
         ->where('created_at', '>=', now()->subMonths(12))
-        ->groupBy('month', 'sort_key')
-        ->orderBy('sort_key')
+        ->groupBy(DB::raw($monthFormat), DB::raw($sortKeyFormat))
+        ->orderBy(DB::raw($sortKeyFormat))
         ->get()
         ->map(fn($r) => [
             'month'   => $r->month,
@@ -132,13 +138,13 @@ class DashboardController extends Controller
 
         // Nouveaux utilisateurs par mois (6 derniers mois)
         $newUsersByMonth = User::select(
-            DB::raw("DATE_FORMAT(created_at, '%b %Y') as month"),
-            DB::raw("DATE_FORMAT(created_at, '%Y%m') as sort_key"),
+            DB::raw("{$monthFormat} as month"),
+            DB::raw("{$sortKeyFormat} as sort_key"),
             DB::raw('count(*) as total')
         )
         ->where('created_at', '>=', now()->subMonths(6))
-        ->groupBy('month', 'sort_key')
-        ->orderBy('sort_key')
+        ->groupBy(DB::raw($monthFormat), DB::raw($sortKeyFormat))
+        ->orderBy(DB::raw($sortKeyFormat))
         ->get()
         ->map(fn($r) => ['month' => $r->month, 'users' => (int) $r->total]);
 

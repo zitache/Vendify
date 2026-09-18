@@ -38,7 +38,9 @@ export const AuthProvider = ({ children }) => {
             await api.post('/logout');
         } catch (_) {}
         localStorage.removeItem('token');
+        localStorage.removeItem('vendify_cart');
         setUser(null);
+        window.location.href = '/login';
     };
 
     return (

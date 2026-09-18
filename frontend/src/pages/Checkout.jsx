@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import axios from '../api/axios';
@@ -13,7 +12,6 @@ const Checkout = () => {
     const [phone, setPhone] = useState(user?.phone || '');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const navigate = useNavigate();
 
     // Référence vers la commande créée (accessible dans les callbacks KiKiaPay)
     const orderRef = useRef(null);
@@ -35,7 +33,8 @@ const Checkout = () => {
                     transaction_id: transactionId || 'sandbox_' + order.id,
                 });
                 clearCart();
-                navigate('/dashboard', { state: { paymentSuccess: true, orderId: order.id } });
+                sessionStorage.setItem('paymentSuccess', JSON.stringify({ orderId: order.id }));
+                window.location.href = '/dashboard';
             } catch (err) {
                 setError(
                     err.response?.data?.message ||
@@ -196,7 +195,7 @@ const Checkout = () => {
                     <div className="border-t border-gray-100 pt-6 space-y-4">
                         <div className="flex justify-between text-gray-600">
                             <span className="font-medium">Sous-total</span>
-                            <span className="font-bold">{cartTotal} FCFA</span>
+                            <span className="font-bold">{cartTotal.toLocaleString('fr-FR')} FCFA</span>
                         </div>
                         <div className="flex justify-between text-gray-600">
                             <span className="font-medium">Frais de livraison</span>
@@ -204,7 +203,7 @@ const Checkout = () => {
                         </div>
                         <div className="flex justify-between text-gray-900 pt-4 border-t border-dashed border-gray-200">
                             <span className="text-xl font-bold">Total à payer</span>
-                            <span className="text-3xl font-black text-agri-green tracking-tighter">{cartTotal} FCFA</span>
+                            <span className="text-3xl font-black text-agri-green tracking-tighter">{cartTotal.toLocaleString('fr-FR')} FCFA</span>
                         </div>
                     </div>
 

@@ -1,10 +1,11 @@
-import React from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { Trash2, Plus, Minus, ShoppingBasket, ArrowRight, ArrowLeft } from 'lucide-react';
 
 const Cart = () => {
     const { cart, removeFromCart, updateQuantity, cartTotal, cartCount } = useCart();
+    const [updated, setUpdated] = useState(false);
 
     if (cart.length === 0) {
         return (
@@ -92,21 +93,17 @@ const Cart = () => {
                     {/* Bouton mise à jour compact */}
                     <div className="flex justify-end pt-2">
                         <button
-                            onClick={(e) => {
-                                const btn = e.currentTarget;
-                                const orig = btn.textContent;
-                                btn.textContent = '✓ Mis à jour';
-                                btn.classList.add('bg-emerald-500', 'text-white', 'border-emerald-500');
-                                btn.classList.remove('border-gray-200', 'text-gray-500');
-                                setTimeout(() => {
-                                    btn.textContent = orig;
-                                    btn.classList.remove('bg-emerald-500', 'text-white', 'border-emerald-500');
-                                    btn.classList.add('border-gray-200', 'text-gray-500');
-                                }, 2000);
+                            onClick={() => {
+                                setUpdated(true);
+                                setTimeout(() => setUpdated(false), 2000);
                             }}
-                            className="text-sm font-semibold text-gray-500 border border-gray-200 py-2 px-4 rounded-lg hover:bg-gray-50 transition-all"
+                            className={`text-sm font-semibold py-2 px-4 rounded-lg border transition-all ${
+                                updated
+                                    ? 'bg-emerald-500 text-white border-emerald-500'
+                                    : 'text-gray-500 border-gray-200 hover:bg-gray-50'
+                            }`}
                         >
-                            Mettre à jour
+                            {updated ? '✓ Mis à jour' : 'Mettre à jour'}
                         </button>
                     </div>
                 </div>
@@ -119,7 +116,7 @@ const Cart = () => {
                         <div className="space-y-4 mb-8">
                             <div className="flex justify-between text-gray-600 font-medium text-lg">
                                 <span>Sous-total</span>
-                                <span>{cartTotal} FCFA</span>
+                                <span>{cartTotal.toLocaleString('fr-FR')} FCFA</span>
                             </div>
                             <div className="flex justify-between text-gray-600 font-medium text-lg">
                                 <span>Livraison</span>
@@ -128,7 +125,7 @@ const Cart = () => {
                             <div className="border-t border-gray-100 pt-6 mt-6">
                                 <div className="flex justify-between text-gray-900">
                                     <span className="text-xl font-bold">Total</span>
-                                    <span className="text-3xl font-black text-agri-green tracking-tighter">{cartTotal} FCFA</span>
+                                    <span className="text-3xl font-black text-agri-green tracking-tighter">{cartTotal.toLocaleString('fr-FR')} FCFA</span>
                                 </div>
                             </div>
                         </div>

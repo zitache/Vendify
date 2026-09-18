@@ -5,7 +5,7 @@ import {
     Package, ShoppingCart, Clock, DollarSign, Plus, ChevronRight,
     Wallet, ArrowDownToLine, X, Phone, CheckCircle, AlertCircle, TrendingUp, Download
 } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import AdminDashboard from './admin/AdminDashboard';
 
 // ─── Modal de retrait ────────────────────────────────────────────────────────
@@ -396,12 +396,16 @@ const BuyerDashboard = ({ stats, user }) => (
 // ─── Composant principal ─────────────────────────────────────────────────────
 const Dashboard = () => {
     const { user } = useAuth();
-    const location = useLocation();
     const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
-    const paymentSuccess = location.state?.paymentSuccess;
-    const paidOrderId   = location.state?.orderId;
+    const [paymentData] = useState(() => {
+        const data = JSON.parse(sessionStorage.getItem('paymentSuccess') || 'null');
+        if (data) sessionStorage.removeItem('paymentSuccess');
+        return data;
+    });
+    const paymentSuccess = !!paymentData;
+    const paidOrderId   = paymentData?.orderId;
 
     useEffect(() => {
         fetchStats();

@@ -31,15 +31,19 @@ const Checkout = () => {
                 await axios.post('/payments/verify', {
                     order_id:       order.id,
                     transaction_id: transactionId || 'sandbox_' + order.id,
-                });
+                }, { timeout: 30000 });
                 clearCart();
                 sessionStorage.setItem('paymentSuccess', JSON.stringify({ orderId: order.id }));
                 window.location.href = '/dashboard';
             } catch (err) {
-                setError(
-                    err.response?.data?.message ||
-                    'Le paiement a été reçu mais la vérification a échoué. Contactez le support.'
-                );
+                if (err.code === 'ECONNABORTED') {
+                    setError('Le serveur met trop de temps à répondre. Votre paiement est peut-être confirmé — vérifiez vos commandes avant de réessayer.');
+                } else {
+                    setError(
+                        err.response?.data?.message ||
+                        'Le paiement a été reçu mais la vérification a échoué. Contactez le support.'
+                    );
+                }
                 setLoading(false);
             }
         };

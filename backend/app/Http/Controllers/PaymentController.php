@@ -42,13 +42,21 @@ class PaymentController extends Controller
             $apiBase    = config('services.kkiapay.api_base');
             $privateKey = config('services.kkiapay.private_key');
 
-            $kkResponse = Http::withHeaders([
-                'x-secret-key' => $privateKey,
-            ])->post("{$apiBase}/api/v1/transactions/status", [
-                'transactionId' => $request->transaction_id,
-            ]);
+            try {
+                $kkResponse = Http::timeout(10)->withHeaders([
+                    'x-secret-key' => $privateKey,
+                ])->post("{$apiBase}/api/v1/transactions/status", [
+                    'transactionId' => $request->transaction_id,
+                ]);
+            } catch (\Exception $e) {
+                Log::error('KKIAPAY_TIMEOUT', ['error' => $e->getMessage()]);
+                return response()->json([
+                    'message' => 'KiKiaPay ne répond pas (timeout). Réessayez dans quelques secondes.',
+                ], 504);
+            }
 
             if (!$kkResponse->ok()) {
+                Log::error('KKIAPAY_ERROR', ['status' => $kkResponse->status(), 'body' => $kkResponse->body()]);
                 return response()->json([
                     'message' => 'Impossible de contacter KiKiaPay. Réessayez ou contactez le support.',
                 ], 502);

@@ -399,13 +399,15 @@ const Dashboard = () => {
     const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
-    const [paymentData] = useState(() => {
-        const data = JSON.parse(sessionStorage.getItem('paymentSuccess') || 'null');
-        if (data) sessionStorage.removeItem('paymentSuccess');
-        return data;
-    });
+    const [paymentData] = useState(() =>
+        JSON.parse(sessionStorage.getItem('paymentSuccess') || 'null')
+    );
     const paymentSuccess = !!paymentData;
     const paidOrderId   = paymentData?.orderId;
+
+    useEffect(() => {
+        if (paymentData) sessionStorage.removeItem('paymentSuccess');
+    }, []);
 
     useEffect(() => {
         fetchStats();

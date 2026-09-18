@@ -83,7 +83,7 @@ class PaymentController extends Controller
                 $earnings = [];
 
                 foreach ($order->items as $item) {
-                    $farmerId = $item->product->user_id ?? null;
+                    $farmerId = $item->product?->user_id ?? null;
                     if (!$farmerId) continue;
                     $subtotal = $item->quantity * $item->unit_price;
                     $earnings[$farmerId] = ($earnings[$farmerId] ?? 0) + $subtotal;

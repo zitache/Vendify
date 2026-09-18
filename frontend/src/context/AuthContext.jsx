@@ -39,7 +39,6 @@ export const AuthProvider = ({ children }) => {
         } catch (_) {}
         localStorage.removeItem('token');
         localStorage.removeItem('vendify_cart');
-        setUser(null);
         window.location.href = '/login';
     };
 

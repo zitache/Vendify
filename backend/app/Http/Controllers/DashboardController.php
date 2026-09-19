@@ -153,12 +153,24 @@ class DashboardController extends Controller
             ->where('status', 'pending')
             ->count();
 
+        // Profits plateforme (5% commission sur retraits approuvés)
+        $feesCollected = (float) DB::table('withdrawals')
+            ->where('status', 'approved')
+            ->sum('fee');
+
+        // Commissions en attente (retraits pending)
+        $feesPending = (float) DB::table('withdrawals')
+            ->where('status', 'pending')
+            ->sum('fee');
+
         return response()->json([
             'users_count'         => $usersCount,
             'products_count'      => $productsCount,
             'orders_count'        => $ordersCount,
             'total_revenue'       => (float) $totalRevenue,
             'pending_withdrawals' => $pendingWithdrawals,
+            'fees_collected'      => $feesCollected,
+            'fees_pending'        => $feesPending,
             'sales_by_month'      => $salesByMonth,
             'users_by_role'       => $usersByRole,
             'orders_by_status'    => $ordersByStatus,

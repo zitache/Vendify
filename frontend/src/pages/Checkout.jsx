@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import axios from '../api/axios';
 import { openKkiapayWidget, addKkiapayListener, removeKkiapayListener } from 'kkiapay';
-import { Truck, ShieldCheck, ChevronRight, AlertCircle, Wallet } from 'lucide-react';
+import { Truck, ShieldCheck, ChevronRight, AlertCircle, Wallet, CheckCircle, LayoutDashboard } from 'lucide-react';
 
 const Checkout = () => {
     const { user } = useAuth();
@@ -12,6 +13,7 @@ const Checkout = () => {
     const [phone, setPhone] = useState(user?.phone || '');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [paidOrder, setPaidOrder] = useState(null);
 
     // Référence vers la commande créée (accessible dans les callbacks KiKiaPay)
     const orderRef = useRef(null);
@@ -33,8 +35,7 @@ const Checkout = () => {
                     transaction_id: transactionId || 'sandbox_' + order.id,
                 }, { timeout: 30000 });
                 clearCart();
-                sessionStorage.setItem('paymentSuccess', JSON.stringify({ orderId: order.id }));
-                window.location.href = '/dashboard';
+                setPaidOrder(order);
             } catch (err) {
                 if (err.code === 'ECONNABORTED') {
                     setError('Le serveur met trop de temps à répondre. Votre paiement est peut-être confirmé — vérifiez vos commandes avant de réessayer.');
@@ -96,6 +97,31 @@ const Checkout = () => {
             setLoading(false);
         }
     };
+
+    // ─── Écran de succès après paiement ──────────────────────────────────────
+    if (paidOrder) {
+        return (
+            <div className="max-w-lg mx-auto px-4 py-20 text-center">
+                <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-12">
+                    <div className="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <CheckCircle className="w-10 h-10 text-emerald-500" />
+                    </div>
+                    <h2 className="text-3xl font-extrabold text-gray-900 mb-3 tracking-tight">Paiement confirmé !</h2>
+                    <p className="text-gray-500 mb-2 text-lg">
+                        Votre commande <strong className="text-gray-900">#{paidOrder.id}</strong> est en cours de préparation.
+                    </p>
+                    <p className="text-sm text-gray-400 mb-8">L'agriculteur va bientôt confirmer et expédier votre commande.</p>
+                    <Link
+                        to="/dashboard"
+                        className="btn-primary inline-flex items-center gap-2 py-4 px-8 shadow-xl shadow-agri-green/20"
+                    >
+                        <LayoutDashboard className="w-5 h-5" />
+                        Voir mes commandes
+                    </Link>
+                </div>
+            </div>
+        );
+    }
 
     // ─── Formulaire de commande ───────────────────────────────────────────────
     return (

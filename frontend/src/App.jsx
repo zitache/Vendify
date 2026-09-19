@@ -8,6 +8,7 @@ import Register from './pages/Register';
 import Catalog from './pages/Catalog';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
+import PaymentSuccess from './pages/PaymentSuccess';
 
 import Dashboard from './pages/Dashboard';
 import Profile from './pages/Profile';
@@ -31,6 +32,9 @@ const PublicLayout = () => (
 function App() {
     return (
         <Routes>
+            {/* Page de succès paiement — standalone, sans spinner auth */}
+            <Route path="/payment-success" element={<PaymentSuccess />} />
+
             {/* Pages publiques — avec Navbar */}
             <Route element={<PublicLayout />}>
                 <Route path="/"          element={<Home />} />

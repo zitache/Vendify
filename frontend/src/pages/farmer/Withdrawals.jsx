@@ -39,8 +39,8 @@ const Withdrawals = () => {
         }
     };
 
-    const totalPending  = withdrawals.filter(w => w.status === 'pending').reduce((s, w) => s + w.amount, 0);
-    const totalApproved = withdrawals.filter(w => w.status === 'approved').reduce((s, w) => s + w.net_amount, 0);
+    const totalPending  = withdrawals.filter(w => w.status === 'pending').reduce((s, w) => s + Number(w.amount), 0);
+    const totalApproved = withdrawals.filter(w => w.status === 'approved').reduce((s, w) => s + Number(w.net_amount), 0);
 
     return (
         <div className="max-w-4xl mx-auto">

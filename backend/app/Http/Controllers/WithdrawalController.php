@@ -52,8 +52,8 @@ class WithdrawalController extends Controller
                 'amount'     => $amount,
                 'fee'        => $fee,
                 'net_amount' => $netAmount,
-                'method'     => $request->method,
-                'phone'      => $request->phone,
+                'method'     => $request->input('method'),
+                'phone'      => $request->input('phone'),
                 'status'     => 'pending',
             ]);
         });

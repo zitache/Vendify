@@ -98,13 +98,16 @@ const WithdrawalModal = ({ balance, onClose, onSuccess }) => {
                     <div>
                         <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Montant à retirer (FCFA)</label>
                         <input
-                            type="number"
+                            type="text"
+                            inputMode="numeric"
+                            pattern="[0-9]*"
                             className="input font-black text-lg"
                             placeholder="Minimum 500 FCFA"
-                            min="500"
-                            max={balance}
                             value={form.amount}
-                            onChange={(e) => setForm({ ...form, amount: e.target.value })}
+                            onChange={(e) => {
+                                const v = e.target.value.replace(/[^0-9]/g, '');
+                                setForm({ ...form, amount: v });
+                            }}
                             required
                         />
                     </div>

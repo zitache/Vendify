@@ -119,13 +119,13 @@ const AdminDashboard = ({ stats }) => {
             </div>
 
             {/* ── Profits plateforme ──────────────────────────────────── */}
-            <div className="bg-gradient-to-br from-violet-600 to-purple-700 rounded-2xl p-6 text-white relative overflow-hidden">
+            <div className="bg-gradient-to-br from-agri-green to-emerald-700 rounded-2xl p-6 text-white relative overflow-hidden">
                 <div className="absolute -right-8 -bottom-8 w-40 h-40 bg-white/5 rounded-full" />
                 <div className="absolute -right-2 -bottom-2 w-24 h-24 bg-white/5 rounded-full" />
                 <BadgePercent className="absolute right-6 top-6 w-14 h-14 opacity-10" />
 
-                <p className="text-xs font-bold uppercase tracking-widest text-purple-200 mb-1">Profits plateforme</p>
-                <p className="text-xs text-purple-300 mb-4">Commission 5% sur les retraits approuvés</p>
+                <p className="text-xs font-bold uppercase tracking-widest text-emerald-100 mb-1">Profits plateforme</p>
+                <p className="text-xs text-emerald-200 mb-4">Commission 5% sur les retraits approuvés</p>
 
                 <div className="flex flex-col sm:flex-row sm:items-end gap-6">
                     <div>
@@ -133,13 +133,13 @@ const AdminDashboard = ({ stats }) => {
                             {fmt(stats.fees_collected)}
                             <span className="text-xl ml-2 font-bold opacity-80">FCFA</span>
                         </p>
-                        <p className="text-purple-300 text-sm font-medium mt-1">Commissions perçues (retraits approuvés)</p>
+                        <p className="text-emerald-200 text-sm font-medium mt-1">Commissions perçues (retraits approuvés)</p>
                     </div>
                     {(stats.fees_pending || 0) > 0 && (
                         <div className="bg-white/10 rounded-xl px-4 py-3 border border-white/20">
-                            <p className="text-xs font-bold text-purple-200 uppercase tracking-widest mb-0.5">En attente</p>
+                            <p className="text-xs font-bold text-emerald-100 uppercase tracking-widest mb-0.5">En attente</p>
                             <p className="text-xl font-black">{fmt(stats.fees_pending)} FCFA</p>
-                            <p className="text-[10px] text-purple-300 mt-0.5">Retraits encore à traiter</p>
+                            <p className="text-[10px] text-emerald-200 mt-0.5">Retraits encore à traiter</p>
                         </div>
                     )}
                 </div>
